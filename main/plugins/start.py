@@ -14,41 +14,41 @@ from main.plugins.actions import set_thumbnail, rem_thumbnail, heroku_restart
 async def start(event):
     await event.reply(f'{st}', 
                       buttons=[
-                              [Button.inline("Menu.", data="menu")]
+                              [Button.inline("Menü", data="menu")]
                               ])
     tag = f'[{event.sender.first_name}](tg://user?id={event.sender_id})'
-    await Drone.send_message(int(ACCESS_CHANNEL), f'{tag} started the BOT')
+    await Drone.send_message(int(ACCESS_CHANNEL), f'{tag} Botu Başlattı!')
     
 @Drone.on(events.callbackquery.CallbackQuery(data="menu"))
 async def menu(event):
-    await event.client.send_file(event.chat_id, caption="**📑MENU.**", file=file,
+    await event.client.send_file(event.chat_id, caption="**📑MENÜ**", file=file,
                     buttons=[[
-                         Button.inline("info.", data="info"),
-                         Button.inline("SOURCE-CODE", data="source")],
+                         Button.inline("Bilgi", data="info"),
+                         Button.inline("Kod", data="source")],
                          [
-                         Button.inline("NOTICE.", data="notice"),
-                         Button.inline("Help/SETTINGS.", data="help")],
+                         Button.inline("Not", data="notice"),
+                         Button.inline("Yardım/Ayarlar", data="help")],
                          [
-                         Button.url("DEVELOPER", url=f"{DEV}")]])
+                         Button.url("Geliştirici", url=f"{DEV}")]])
     await event.delete()
     
 @Drone.on(events.callbackquery.CallbackQuery(data="menu2"))
 async def menu2(event):
-    await event.edit("**📑MENU.**",
+    await event.edit("**📑MENÜ**",
                     buttons=[[
-                         Button.inline("info.", data="info"),
-                         Button.inline("SOURCE-CODE", data="source")],
+                         Button.inline("Bilgi", data="info"),
+                         Button.inline("Kod", data="source")],
                          [
-                         Button.inline("NOTICE.", data="notice"),
-                         Button.inline("Help/SETTINGS.", data="help")],
+                         Button.inline("Not", data="notice"),
+                         Button.inline("Yardım/Ayarlar", data="help")],
                          [
-                         Button.url("DEVELOPER", url=f"{DEV}")]])
+                         Button.url("Geliştirici", url=f"{DEV}")]])
        
 @Drone.on(events.callbackquery.CallbackQuery(data="info"))
 async def info(event):
-    await event.edit(f'**ℹ️NFO:**\n\n{info_text}',
+    await event.edit(f'**Bilgi:**\n\n{info_text}',
                     buttons=[[
-                         Button.inline("Menu.", data="menu2")]])
+                         Button.inline("Menü", data="menu2")]])
     
 @Drone.on(events.callbackquery.CallbackQuery(data="notice"))
 async def notice(event):
@@ -58,27 +58,27 @@ async def notice(event):
 async def source(event):
     await event.edit(source_text,
                     buttons=[[
-                         Button.url("Main.", url="https://github.com/vasusen-code/videoconvertor/tree/main"),
-                         Button.url("PUBLIC", url="https://github.com/vasusen-code/videoconvertor/tree/public")]])
+                         Button.url("Kişisei", url="https://github.com/vasusen-code/videoconvertor/tree/main"),
+                         Button.url("Halk", url="https://github.com/vasusen-code/videoconvertor/tree/public")]])
                          
                     
 @Drone.on(events.callbackquery.CallbackQuery(data="help"))
 async def help(event):
-    await event.edit('**👥HELP & SETTINGS.**',
+    await event.edit('**Yardım ve Ayarlar**',
                     buttons=[[
-                         Button.inline("set THUMBNAIL", data="sett"),
-                         Button.inline("rem THUMBNAIL", data='remt')],
+                         Button.inline("Thumbnail Ayarla", data="sett"),
+                         Button.inline("Thumbnail Kaldır", data='remt')],
                          [
-                         Button.inline("PLUGUNS.", data="plugins"),
-                         Button.inline("restart", data="restart"),
-                         Button.url("SUPPORT.", url=f"{SUPPORT_LINK}")],
+                         Button.inline("Eklentiler", data="plugins"),
+                         Button.inline("Yeniden Başlat", data="restart"),
+                         Button.url("Destek", url=f"{SUPPORT_LINK}")],
                          [
-                         Button.inline("Menu.", data="menu2")]])
+                         Button.inline("Menü", data="menu2")]])
     
 @Drone.on(events.callbackquery.CallbackQuery(data="plugins"))
 async def plugins(event):
     await event.edit(f'{help_text}',
-                    buttons=[[Button.inline("Menu.", data="menu2")]])
+                    buttons=[[Button.inline("Menü", data="menu2")]])
                    
  #-----------------------------------------------------------------------------------------------                            
     
@@ -88,15 +88,15 @@ async def sett(event):
     msg = await button.get_reply_message() 
     await event.delete()
     async with Drone.conversation(event.chat_id) as conv: 
-        xx = await conv.send_message("Send me any image for thumbnail as a `reply` to this message.")
+        xx = await conv.send_message("Bu Mesaja 'Yanıt' Olarak Küçük Resim İçin Bana Herhangi Bir Resim Gönder.")
         x = await conv.get_reply()
         if not x.media:
-            xx.edit("No media found.")
+            xx.edit("Medya Bulunamadı.")
         mime = x.file.mime_type
         if not 'png' in mime:
             if not 'jpg' in mime:
                 if not 'jpeg' in mime:
-                    return await xx.edit("No image found.")
+                    return await xx.edit("Resim Bulunamadı.")
         await set_thumbnail(event, x.media)
         await xx.delete()
         
@@ -108,11 +108,11 @@ async def remt(event):
 @Drone.on(events.callbackquery.CallbackQuery(data="restart"))
 async def res(event):
     if not f'{event.sender_id}' == f'{int(AUTH_USERS)}':
-        return await event.edit("Only authorized user can restart!")
+        return await event.edit("Yalnızca Yetkili Kullanıcı Yeniden Başlatabilir!")
     result = await heroku_restart()
     if result is None:
         await event.edit("You have not filled `HEROKU_API` and `HEROKU_APP_NAME` vars.")
     elif result is False:
-        await event.edit("An error occured!")
+        await event.edit("Bir Hata Oluştu!")
     elif result is True:
-        await event.edit("Restarting app, wait for a minute.")
+        await event.edit("Uygulama Yeniden Başlatılıyor, Bir Dakika Bekleyin.")
