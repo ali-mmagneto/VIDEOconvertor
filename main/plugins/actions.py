@@ -35,22 +35,22 @@ async def force_sub(id):
 #Thumbnail--------------------------------------------------------------------------------------------------------------
 
 async def set_thumbnail(event, img):
-    edit = await event.client.send_message(event.chat_id, 'Trying to process.')
+    edit = await event.client.send_message(event.chat_id, 'İşlemeye Çalışıyor.')
     try:
         path = await event.client.download_media(img)
         meta = upload_file(path)
         link = f'https://telegra.ph{meta[0]}'
     except Exception as e:
         print(e)
-        return await edit.edit("Failed to Upload on Tgraph.")
+        return await edit.edit("Telegram'a Yüklenemedi.")
     await db.update_thumb_link(event.sender_id, link)
-    await edit.edit("Done!")
+    await edit.edit("Tamamlandı!")
     
 async def rem_thumbnail(event):
-    edit = await event.client.send_message(event.chat_id, 'Trying.')
+    edit = await event.client.send_message(event.chat_id, 'Deniyor.')
     T = await db.get_thumb(event.sender_id)
     if T is None:
-        return await edit.edit('No thumbnail saved!')
+        return await edit.edit('Thumbnail Kydedilmedi!')
     await db.rem_thumb_link(event.sender_id)
     await edit.edit('Removed!')
     
@@ -81,7 +81,7 @@ async def LOG_START(event, ps_name):
     if not str(LOG_ID).startswith("-100"):
         chat = int("-100" + str(LOG_ID))
     Tag = mention(event.sender.first_name, event.sender_id)
-    text = f'{ps_name}\n\nUSER: {Tag}'
+    text = f'{ps_name}\n\nKullanıcı: {Tag}'
     xx = await event.client.send_message(int(chat), text, link_preview=False)
     return xx
 
@@ -96,12 +96,12 @@ async def LOG_END(event, ps_name):
 async def msg(event):
     ok = await event.get_reply_message()
     if not ok:
-        await event.reply("Reply to the message you want to send!")
+        await event.reply("Göndermek İstediğiniz Mesajı Yanıtlayın!")
     user = event.pattern_match.group(1)
     if not user:
-        await event.reply("Give the user id you want me to send message. ")
+        await event.reply("Mesaj Göndermemi İstediğiniz Kullanıcı Kimliğini Verin. ")
     await Drone.send_message(int(user) , ok )
-    await event.reply("Messsage sent.")
+    await event.reply("mesaj Gönderildi.")
     
 #Listing--------------------------------------------------------------------------------------------------------------
 
