@@ -18,7 +18,7 @@ from ethon.telefunc import fast_download
 from ethon.pyfunc import video_metadata
 
 #Don't be a MF by stealing someone's hardwork.
-forcesubtext = f"Hey there!To use this bot you've to join @{FORCESUB_UN}.\n\nAlso join @DroneBots."
+forcesubtext = f"Beni Kullanmak İçin @{FORCESUB_UN} Katılmalısın.\n\nDestek @trbotlistesidestek."
 
 @Drone.on(events.NewMessage(incoming=True,func=lambda e: e.is_private))
 async def compin(event):
@@ -31,15 +31,15 @@ async def compin(event):
                 return await event.reply(forcesubtext)
             banned = await db.is_banned(event.sender_id)
             if banned is True:
-                return await event.reply(f'you are Banned to use me!\n\ncontact [SUPPORT]({SUPPORT_LINK})', link_preview=False)
+                return await event.reply(f'Yasaklandın!\n\nİletişim [Grup]({SUPPORT_LINK})', link_preview=False)
             video = event.file.mime_type
             if 'video' in video:
                 await event.reply("📽",
                             buttons=[
-                                [Button.inline("COMPRESS", data="compress"),
-                                 Button.inline("CONVERT", data="convert")],
-                                [Button.inline("RENAME", data="rename"),
-                                 Button.inline("TRIM", data="trim")]
+                                [Button.inline("Sıkıştır", data="compress"),
+                                 Button.inline("Dönüştür", data="convert")],
+                                [Button.inline("Yeniden Adlandır", data="rename"),
+                                 Button.inline("Kırp", data="trim")]
                             ])
             elif 'png' in video:
                 return
@@ -50,14 +50,14 @@ async def compin(event):
             else:
                 await event.reply('📦',
                             buttons=[  
-                                [Button.inline("RENAME", data="rename")]])
+                                [Button.inline("Yeniden Adlandır", data="rename")]])
     await event.forward_to(int(ACCESS_CHANNEL))
 
 @Drone.on(events.callbackquery.CallbackQuery(data="convert"))
 async def convert(event):
     button = await event.get_message()
     msg = await button.get_reply_message()  
-    await event.edit("🔃**CONVERT:**",
+    await event.edit("🔃**Dönüştür:**",
                     buttons=[
                         [Button.inline("MP3", data="mp3"),
                          Button.inline("FLAC", data="flac"),
@@ -73,10 +73,10 @@ async def convert(event):
 async def back(event):
     await event.edit("📽",
                     buttons=[
-                        [Button.inline("COMPRESS", data="compress"),
-                         Button.inline("CONVERT", data="convert")],
-                        [Button.inline("RENAME", data="rename"),
-                         Button.inline("TRIM", data="trim")]])
+                        [Button.inline("Sıkıştır", data="compress"),
+                         Button.inline("Dönüştür", data="convert")],
+                        [Button.inline("Yeniden Adlandır", data="rename"),
+                         Button.inline("Kırp", data="trim")]])
                             
 #-----------------------------------------------------------------------------------------
 
@@ -96,7 +96,7 @@ async def vtmp3(event):
         await mp3(event, msg)
         os.rmdir("audioconvert")
     else:
-        await event.edit("Another process in progress!")
+        await event.edit("Devam Eden Başka Bir İşlem Var! Sonra Tekrar Dene!")
         
 @Drone.on(events.callbackquery.CallbackQuery(data="flac"))
 async def vtflac(event):
@@ -111,7 +111,7 @@ async def vtflac(event):
         await flac(event, msg)
         os.rmdir("audioconvert")
     else:
-        await event.edit("Another process in progress!")
+        await event.edit("Devam Eden Başka Bir İşlem Var! Sonra Tekrar Dene!")
         
 @Drone.on(events.callbackquery.CallbackQuery(data="wav"))
 async def vtwav(event):
@@ -126,7 +126,7 @@ async def vtwav(event):
         await wav(event, msg)
         os.rmdir("audioconvert")
     else:
-        await event.edit("Another process in progress!")
+        await event.edit("Devam Eden Başka Bir İşlem Var! Sonra Tekrar Dene!")
         
 @Drone.on(events.callbackquery.CallbackQuery(data="mp4"))
 async def vtmp4(event):
@@ -187,16 +187,16 @@ async def rename(event):
     msg = await button.get_reply_message()  
     await event.delete()
     async with Drone.conversation(event.chat_id) as conv: 
-        cm = await conv.send_message("Send me a new name for the file as a `reply` to this message.\n\n**NOTE:** `.ext` is not required.")                              
+        cm = await conv.send_message("Bu Mesaja 'Yanıt' Olarak Dosya İçin Bana Yeni Bir Ad Gönder.\n\n**NOT:** Uzantıya Gerek Yok.")                              
         try:
             m = await conv.get_reply()
             new_name = m.text
             await cm.delete()                    
             if not m:                
-                return await cm.edit("No response found.")
+                return await cm.edit("Yanıt Bulunamadı.")
         except Exception as e: 
             print(e)
-            return await cm.edit("An error occured while waiting for the response.")
+            return await cm.edit("Yanıt Beklenirken Bir Hata Oluştu.")
     await media_rename(event, msg, new_name)                     
                    
 @Drone.on(events.callbackquery.CallbackQuery(data="compress"))
@@ -208,7 +208,7 @@ async def compresss(event):
         index = process1.index(f'{event.sender_id}')
         last = timer[int(index)]
         present = time.time()
-        return await event.answer(f"You have to wait {300-round(present-float(last))} seconds more to start a new process!", alert=True)
+        return await event.answer(f"Yeni Bir İşlem Başlatmak İçin {300-round(present-float(last))} Saniye Beklemelisin!", alert=True)
     button = await event.get_message()
     msg = await button.get_reply_message()
     if not os.path.isdir("compressmedia"):
@@ -219,12 +219,12 @@ async def compresss(event):
         now = time.time()
         timer.append(f'{now}')
         process1.append(f'{event.sender_id}')
-        await event.client.send_message(event.chat_id, 'You can start a new process again after 5 minutes.')
+        await event.client.send_message(event.chat_id, '5 Dakika Sonra Tekrar Yeni Bir İşleme Başlayabilirsiniz.')
         await asyncio.sleep(300)
         timer.pop(int(timer.index(f'{now}')))
         process1.pop(int(process1.index(f'{event.sender_id}')))
     else:
-        await event.edit(f"Another process in progress!\n\n**[LOG CHANNEL](https://t.me/{LOG_CHANNEL})**", link_preview=False)
+        await event.edit(f"Devam Eden Başka Bir İşlem Var!\n\n**[Bilgi Kanalı](https://t.me/{LOG_CHANNEL})**", link_preview=False)
     
 @Drone.on(events.callbackquery.CallbackQuery(data="trim"))
 async def vtrim(event):
@@ -236,24 +236,24 @@ async def vtrim(event):
     await event.delete()
     async with Drone.conversation(event.chat_id) as conv: 
         try:
-            xx = await conv.send_message("send me the start time of the video you want to trim from as a reply to this. \n\nIn format hh:mm:ss , for eg: `01:20:69` ")
+            xx = await conv.send_message("Buna Cevap Olarak Kırpmak İstediğin Videonun Başlangıç Saatini Bana Gönder. \n\n**Format** saat:dakika:saniye , Örnek: `01:20:69` ")
             x = await conv.get_reply()
             st = x.text
             await xx.delete()                    
             if not st:               
-                return await xx.edit("No response found.")
+                return await xx.edit("Yanıt Bulunamadı.")
         except Exception as e: 
             print(e)
-            return await xx.edit("An error occured while waiting for the response.")
+            return await xx.edit("Yanıt Beklenirken Bir Hata Oluştu.")
         try:
-            xy = await conv.send_message("send me the end time of the video you want to trim till as a reply to this.  \n\nIn format hh:mm:ss , for eg: `01:20:69` ")  
+            xy = await conv.send_message("Buna Cevap Olarak Kırpmak İstediğin Videonun Bitiş Saatini Bana Gönder.  \n\n**Format** : saat:dakika:saniye , Örnek: `01:20:69` ")  
             y = await conv.get_reply()
             et = y.text
             await xy.delete()                    
             if not et:                
-                return await xy.edit("No response found.")
+                return await xy.edit("Yanıt Bulunamadı.")
         except Exception as e: 
             print(e)
-            return await xy.edit("An error occured while waiting for the response.")
+            return await xy.edit("Yanıt Beklenirken Bir Hata Oluştu.")
         await trim(event, msg, st, et)
             
