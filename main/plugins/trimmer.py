@@ -16,7 +16,7 @@ from telethon.tl.types import DocumentAttributeVideo
 
 async def trim(event, msg, st, et):
     Drone = event.client
-    edit = await Drone.send_message(event.chat_id, "Trying to process.", reply_to=msg.id)
+    edit = await Drone.send_message(event.chat_id, "İşlemeye Çalışıyor.", reply_to=msg.id)
     new_name = "out_" + dt.now().isoformat("_", "seconds")
     if hasattr(msg.media, "document"):
         file = msg.media.document
@@ -41,35 +41,35 @@ async def trim(event, msg, st, et):
         out = new_name + ext
     DT = time.time()
     try:
-        await fast_download(name, file, Drone, edit, DT, "**DOWNLOADING:**")
+        await fast_download(name, file, Drone, edit, DT, "**İndiriliyor:**")
     except Exception as e:
         print(e)
-        return await edit.edit(f"An error occured while downloading.\n\nContact [SUPPORT]({SUPPORT_LINK})", link_preview=False) 
+        return await edit.edit(f"İndirme Sırasında Bir Hata Oluştu.\n\nİletişim [Grup]({SUPPORT_LINK})", link_preview=False) 
     try:
-        await edit.edit("Trimming.")
+        await edit.edit("Kırpılıyor.")
         bash(f'ffmpeg -i {name} -ss {st} -to {et} -acodec copy -vcodec copy {out}')
         out2 = new_name + '_2_' + '.mp4'
         rename(out, out2)
     except Exception as e:
         print(e)
-        return await edit.edit(f"An error occured while trimming!\n\nContact [SUPPORT]({SUPPORT_LINK})", link_preview=False)
+        return await edit.edit(f"Kırpma Sırasında Bir Hata Oluştu.\n\nİletişim [Grup]({SUPPORT_LINK})", link_preview=False)
     UT = time.time()
-    text = f"**TRIMMED by :** @{BOT_UN}"
+    text = f"**Kırpan :** @{BOT_UN}"
     try:
         metadata = video_metadata(out2)
         width = metadata["width"]
         height = metadata["height"]
         duration = metadata["duration"]
         attributes = [DocumentAttributeVideo(duration=duration, w=width, h=height, supports_streaming=True)]
-        uploader = await fast_upload(f'{out2}', f'{out2}', UT, Drone, edit, '**UPLOADING:**')
+        uploader = await fast_upload(f'{out2}', f'{out2}', UT, Drone, edit, '**Yükleniyor:**')
         await Drone.send_file(event.chat_id, uploader, caption=text, thumb=JPG3, attributes=attributes, force_document=False)
     except Exception:
         try:
-            uploader = await fast_upload(f'{out2}', f'{out2}', UT, Drone, edit, '**UPLOADING:**')
+            uploader = await fast_upload(f'{out2}', f'{out2}', UT, Drone, edit, '**Yükleniyor:**')
             await Drone.send_file(event.chat_id, uploader, caption=text, thumb=JPG, force_document=True)
         except Exception as e:
             print(e)
-            return await edit.edit(f"An error occured while uploading.\n\nContact [SUPPORT]({SUPPORT_LINK})", link_preview=False)
+            return await edit.edit(f"Yükleme Sırasında Bir Hata Oluştu.\n\nİletişim [Grup]({SUPPORT_LINK})", link_preview=False)
     await edit.delete()
     os.remove(name)
     os.remove(out2)
